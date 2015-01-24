@@ -15,8 +15,56 @@ class GameScene: SKScene {
     var lastUpdateTime: NSTimeInterval = 0
     var dt: NSTimeInterval = 0
     let zombieMovePointsPerSec: CGFloat = 480.0
+    
+    /// Vector velocidad
     var velocity = CGPointZero
     
+    /// Area de juego
+    let playableRect: CGRect
+    
+    
+    ///
+    /// Al inicio, calculo el area jugable
+    ///
+    override init(size: CGSize) {
+        
+        //El maximo aspect ratio soportado (soporta desde 3:2 = 1.33 hasta 16:9 = 1.77)
+        let maxAspectRatio:CGFloat = 16.0 / 9.0
+
+        //El ancho del area jugable no cambia con .AspectFill, pero si el alto. Aca calculo el nuevo alto del area jugable usando el ancho (ancho / ratio = alto)
+        let playableHeight = size.width / maxAspectRatio
+        
+        //Calculo el margen que hay que dejar arriba y abajo
+        let playableMargin = (size.height - playableHeight) / 2.0
+        
+        /*
+        Armo un rectangulo centrado en la pantalla
+    
+        +----------------------+
+        +----------------------+
+        |                      |
+        |    playableRect      |  playableHeight
+        |                      |
+        +----------------------+  y=playableMargin
+        +----------------------+
+        x=0
+             width (no cambia)
+        
+        */
+        playableRect = CGRect(x: 0, y: playableMargin, width: size.width, height: playableHeight)
+        super.init(size: size)
+    }
+    
+    ///
+    ///Este es para usar el scene editor. No se usa
+    ///
+    required init(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    ///
+    /// Se inicializa la vista
+    ///
     override func didMoveToView(view: SKView) {
         backgroundColor  = SKColor.whiteColor()
         let background = SKSpriteNode(imageNamed: "background1")
@@ -26,9 +74,27 @@ class GameScene: SKScene {
         
         zombie.position = CGPoint(x: 400, y: 400)
         addChild(zombie)
-
+        
     }
     
+    
+    ///
+    /// Mueve el zombie a la velocidad calculada en cada frame update (velocidad * dt)
+    ///
+    func moveSprite(sprite: SKSpriteNode, velocity: CGPoint) {
+        
+        //Vector velocidad por tiempo
+        let amountToMove = CGPoint(x: velocity.x * CGFloat(dt), y: velocity.y * CGFloat(dt))
+        println("Amount to move: \(amountToMove)")
+        
+        //Suma el vector velocidad por tiempo a la posicion original del zombie
+        sprite.position = CGPoint(x: sprite.position.x + amountToMove.x, y: sprite.position.y + amountToMove.y)
+    }
+    
+    ///
+    /// Se ejecuta en cada actualizacion del frame
+    /// Mueve el zombie a una nueva posicion y calcula el diferencial de tiempo que paso (dt) para el proximo movimiento
+    ///
     override func update(currentTime: NSTimeInterval) {
         //zombie.position = CGPoint(x: zombie.position.x + 4, y: zombie.position.y)
         moveSprite(zombie, velocity: velocity)
@@ -40,36 +106,77 @@ class GameScene: SKScene {
         }
         lastUpdateTime = currentTime
         println("\(dt*1000) milliseconds since last update")
-        
+        //Chequea si se pega contra los bordes
+        boundsCheckZombie()
     }
     
-    func moveSprite(sprite: SKSpriteNode, velocity: CGPoint) {
-        let amountToMove = CGPoint(x: velocity.x * CGFloat(dt), y: velocity.y * CGFloat(dt))
-        println("Amount to move: \(amountToMove)")
-        sprite.position = CGPoint(x: sprite.position.x + amountToMove.x, y: sprite.position.y + amountToMove.y)
-    }
     
+    ///
+    /// Recalcula el vector velocidad cada vez que se toca en un punto de la pantalla (el nombre de la funcion esta mal)
+    ///
     func moveZombieToward(location: CGPoint) {
-        //vector
+        
+        //vector diferencia entre el punto tocado y la posicion del zombie
         let offset = CGPoint(x: location.x - zombie.position.x, y: location.y - zombie.position.y)
-        //largo del vector
+        
+        //largo del vector diferencia
         let length = sqrt(Double(offset.x * offset.x + offset.y * offset.y))
+        
         //normalizacion del vector (vector de largo 1)
         let direction = CGPoint(x: offset.x / CGFloat(length), y: offset.y / CGFloat(length))
-        //para calcular el momento del vector multiplico el normalizado por la velocidad que quiero
+        
+        //para calcular la magnitud del vector velocidad multiplico el normalizado por la velocidad que quiero
         velocity = CGPoint(x: direction.x * zombieMovePointsPerSec, y: direction.y * zombieMovePointsPerSec)
     }
+
     
+    ///
+    /// Comprueba si choca contra los bordes y le cambia el sentido
+    ///
+    func boundsCheckZombie() {
+        //Uso el area de juego como referencia
+        let bottomLeft = CGPoint(x: 0, y: CGRectGetMinY(playableRect))
+        let topRight = CGPoint(x: size.width, y: CGRectGetMaxY(playableRect))
+        
+        if zombie.position.x <= bottomLeft.x {
+            zombie.position.x = bottomLeft.x
+            velocity.x = -velocity.x
+        }
+        if zombie.position.x >= topRight.x {
+            zombie.position.x = topRight.x
+            velocity.x = -velocity.x
+        }
+        if zombie.position.y <= bottomLeft.y {
+            zombie.position.y = bottomLeft.y
+            velocity.y = -velocity.y
+        }
+        if zombie.position.y >= topRight.y {
+                zombie.position.y = topRight.y
+                velocity.y = -velocity.y
+        }
+    }
+    
+    
+    ///
+    /// Al tocar en un punto de la pantalla llama a recalcular el vector velocidad
+    ///
     func sceneTouched(touchLocation: CGPoint) {
         moveZombieToward(touchLocation)
     }
     
+    
+    ///
+    ///Helper touch
+    ///
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
         let touch = touches.anyObject() as UITouch
         let touchLocation = touch.locationInNode(self)
         sceneTouched(touchLocation)
     }
     
+    ///
+    ///Helper touch
+    ///
     override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
         let touch = touches.anyObject() as UITouch
         let touchLocation = touch.locationInNode(self)
