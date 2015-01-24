@@ -108,6 +108,9 @@ class GameScene: SKScene {
         println("\(dt*1000) milliseconds since last update")
         //Chequea si se pega contra los bordes
         boundsCheckZombie()
+        //Rota al zombie en el angulo del vector velocidad
+        rotateSprite(zombie, direction: velocity)
+        
     }
     
     
@@ -156,6 +159,13 @@ class GameScene: SKScene {
         }
     }
     
+    
+    ///
+    /// Rota a un sprite segun el angulo del vector direction (angulo = arctan (opuesto / adyacente))
+    ///
+    func rotateSprite(sprite: SKSpriteNode, direction: CGPoint) {
+            sprite.zRotation = CGFloat(atan2(Double(direction.y), Double(direction.x)))
+    }
     
     ///
     /// Al tocar en un punto de la pantalla llama a recalcular el vector velocidad
