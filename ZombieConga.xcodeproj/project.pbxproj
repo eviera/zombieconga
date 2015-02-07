@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A58EEA2E1A79885600690BE9 /* MyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58EEA2D1A79885600690BE9 /* MyUtils.swift */; };
 		A5C9B2621A5CCDEB0005374A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C9B2611A5CCDEB0005374A /* AppDelegate.swift */; };
 		A5C9B2661A5CCDEB0005374A /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C9B2651A5CCDEB0005374A /* GameScene.swift */; };
 		A5C9B2681A5CCDEB0005374A /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C9B2671A5CCDEB0005374A /* GameViewController.swift */; };
@@ -33,6 +34,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A58EEA2D1A79885600690BE9 /* MyUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyUtils.swift; sourceTree = "<group>"; };
 		A5C9B25C1A5CCDEB0005374A /* ZombieConga.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZombieConga.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5C9B2601A5CCDEB0005374A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A5C9B2611A5CCDEB0005374A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 				A5C9B28B1A5CDA1D0005374A /* sprites.atlas */,
 				A5C9B2611A5CCDEB0005374A /* AppDelegate.swift */,
 				A5C9B2651A5CCDEB0005374A /* GameScene.swift */,
+				A58EEA2D1A79885600690BE9 /* MyUtils.swift */,
 				A5C9B2671A5CCDEB0005374A /* GameViewController.swift */,
 				A5C9B2691A5CCDEB0005374A /* Main.storyboard */,
 				A5C9B26C1A5CCDEB0005374A /* Images.xcassets */,
@@ -250,6 +253,7 @@
 				A5C9B2661A5CCDEB0005374A /* GameScene.swift in Sources */,
 				A5C9B2681A5CCDEB0005374A /* GameViewController.swift in Sources */,
 				A5C9B2621A5CCDEB0005374A /* AppDelegate.swift in Sources */,
+				A58EEA2E1A79885600690BE9 /* MyUtils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -443,6 +447,7 @@
 				A5C9B2811A5CCDEB0005374A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A5C9B2821A5CCDEB0005374A /* Build configuration list for PBXNativeTarget "ZombieCongaTests" */ = {
 			isa = XCConfigurationList;
@@ -451,6 +456,7 @@
 				A5C9B2841A5CCDEB0005374A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

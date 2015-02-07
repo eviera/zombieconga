@@ -84,11 +84,13 @@ class GameScene: SKScene {
     func moveSprite(sprite: SKSpriteNode, velocity: CGPoint) {
         
         //Vector velocidad por tiempo
-        let amountToMove = CGPoint(x: velocity.x * CGFloat(dt), y: velocity.y * CGFloat(dt))
+        //let amountToMove = CGPoint(x: velocity.x * CGFloat(dt), y: velocity.y * CGFloat(dt))
+        let amountToMove = velocity * CGFloat(dt)
         println("Amount to move: \(amountToMove)")
         
         //Suma el vector velocidad por tiempo a la posicion original del zombie
-        sprite.position = CGPoint(x: sprite.position.x + amountToMove.x, y: sprite.position.y + amountToMove.y)
+        //sprite.position = CGPoint(x: sprite.position.x + amountToMove.x, y: sprite.position.y + amountToMove.y)
+        sprite.position += amountToMove
     }
     
     ///
@@ -96,7 +98,6 @@ class GameScene: SKScene {
     /// Mueve el zombie a una nueva posicion y calcula el diferencial de tiempo que paso (dt) para el proximo movimiento
     ///
     override func update(currentTime: NSTimeInterval) {
-        //zombie.position = CGPoint(x: zombie.position.x + 4, y: zombie.position.y)
         moveSprite(zombie, velocity: velocity)
         
         if lastUpdateTime > 0 {
@@ -106,8 +107,10 @@ class GameScene: SKScene {
         }
         lastUpdateTime = currentTime
         println("\(dt*1000) milliseconds since last update")
+        
         //Chequea si se pega contra los bordes
         boundsCheckZombie()
+        
         //Rota al zombie en el angulo del vector velocidad
         rotateSprite(zombie, direction: velocity)
         
@@ -120,16 +123,19 @@ class GameScene: SKScene {
     func moveZombieToward(location: CGPoint) {
         
         //vector diferencia entre el punto tocado y la posicion del zombie
-        let offset = CGPoint(x: location.x - zombie.position.x, y: location.y - zombie.position.y)
+        //let offset = CGPoint(x: location.x - zombie.position.x, y: location.y - zombie.position.y)
+        let offset = location - zombie.position
         
         //largo del vector diferencia
-        let length = sqrt(Double(offset.x * offset.x + offset.y * offset.y))
+        //let length = sqrt(Double(offset.x * offset.x + offset.y * offset.y))
         
         //normalizacion del vector (vector de largo 1)
-        let direction = CGPoint(x: offset.x / CGFloat(length), y: offset.y / CGFloat(length))
+        //let direction = CGPoint(x: offset.x / CGFloat(length), y: offset.y / CGFloat(length))
+        let direction = offset / offset.length()
         
         //para calcular la magnitud del vector velocidad multiplico el normalizado por la velocidad que quiero
-        velocity = CGPoint(x: direction.x * zombieMovePointsPerSec, y: direction.y * zombieMovePointsPerSec)
+        //velocity = CGPoint(x: direction.x * zombieMovePointsPerSec, y: direction.y * zombieMovePointsPerSec)
+        velocity = direction * zombieMovePointsPerSec
     }
 
     
@@ -164,7 +170,8 @@ class GameScene: SKScene {
     /// Rota a un sprite segun el angulo del vector direction (angulo = arctan (opuesto / adyacente))
     ///
     func rotateSprite(sprite: SKSpriteNode, direction: CGPoint) {
-            sprite.zRotation = CGFloat(atan2(Double(direction.y), Double(direction.x)))
+        //sprite.zRotation = CGFloat(atan2(Double(direction.y), Double(direction.x)))
+        sprite.zRotation = direction.angle
     }
     
     ///
