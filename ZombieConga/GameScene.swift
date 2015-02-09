@@ -22,6 +22,9 @@ class GameScene: SKScene {
     /// Area de juego
     let playableRect: CGRect
     
+    //Ultima posicion tocada
+    var lastTouchLocation = CGPointZero
+    
     
     ///
     /// Al inicio, calculo el area jugable
@@ -86,7 +89,7 @@ class GameScene: SKScene {
         //Vector velocidad por tiempo
         //let amountToMove = CGPoint(x: velocity.x * CGFloat(dt), y: velocity.y * CGFloat(dt))
         let amountToMove = velocity * CGFloat(dt)
-        println("Amount to move: \(amountToMove)")
+        //println("Amount to move: \(amountToMove)")
         
         //Suma el vector velocidad por tiempo a la posicion original del zombie
         //sprite.position = CGPoint(x: sprite.position.x + amountToMove.x, y: sprite.position.y + amountToMove.y)
@@ -98,7 +101,7 @@ class GameScene: SKScene {
     /// Mueve el zombie a una nueva posicion y calcula el diferencial de tiempo que paso (dt) para el proximo movimiento
     ///
     override func update(currentTime: NSTimeInterval) {
-        moveSprite(zombie, velocity: velocity)
+        
         
         if lastUpdateTime > 0 {
             dt = currentTime - lastUpdateTime
@@ -106,21 +109,40 @@ class GameScene: SKScene {
             dt = 0
         }
         lastUpdateTime = currentTime
-        println("\(dt*1000) milliseconds since last update")
         
-        //Chequea si se pega contra los bordes
+
+        //Calculo la distancia desde donde esta el zombie hasta donde se toco la pantalla
+        let zombieToTouch: CGPoint = lastTouchLocation - zombie.position
+        
+        //Calculo el largo que deberia moverse el zombie en este frame
+        let zombieDistanceToTravel: CGFloat = zombieMovePointsPerSec * CGFloat(dt)
+        
+        
+        if zombieToTouch.length() <= zombieDistanceToTravel {
+            zombie.position = lastTouchLocation
+            velocity = CGPointZero
+            
+        } else {
+
+            moveSprite(zombie, velocity: velocity)
+        
+            
+            //Rota al zombie en el angulo del vector velocidad
+            rotateSprite(zombie, direction: velocity)
+        }
+        
+        
+        //Chequea siempre si se pega contra los bordes
         boundsCheckZombie()
-        
-        //Rota al zombie en el angulo del vector velocidad
-        rotateSprite(zombie, direction: velocity)
         
     }
     
     
     ///
-    /// Recalcula el vector velocidad cada vez que se toca en un punto de la pantalla (el nombre de la funcion esta mal)
+    /// Recalcula el vector velocidad cada vez que se toca en un punto de la pantalla (el nombre de la funcion original esta mal)
+    /// Este metodo se llamaba moveZombieToward(location: CGPoint)
     ///
-    func moveZombieToward(location: CGPoint) {
+    func recalculateVelocity(location: CGPoint) -> CGPoint {
         
         //vector diferencia entre el punto tocado y la posicion del zombie
         //let offset = CGPoint(x: location.x - zombie.position.x, y: location.y - zombie.position.y)
@@ -135,7 +157,9 @@ class GameScene: SKScene {
         
         //para calcular la magnitud del vector velocidad multiplico el normalizado por la velocidad que quiero
         //velocity = CGPoint(x: direction.x * zombieMovePointsPerSec, y: direction.y * zombieMovePointsPerSec)
-        velocity = direction * zombieMovePointsPerSec
+        let velocity = direction * zombieMovePointsPerSec
+        
+        return velocity
     }
 
     
@@ -178,7 +202,11 @@ class GameScene: SKScene {
     /// Al tocar en un punto de la pantalla llama a recalcular el vector velocidad
     ///
     func sceneTouched(touchLocation: CGPoint) {
-        moveZombieToward(touchLocation)
+        //Guardo la posicion donde se toco
+        lastTouchLocation = touchLocation
+        
+        //Recalcula y asigna la nueva velocidad
+        velocity = recalculateVelocity(touchLocation)
     }
     
     
