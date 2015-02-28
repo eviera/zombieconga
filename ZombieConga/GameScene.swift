@@ -15,6 +15,7 @@ class GameScene: SKScene {
     var lastUpdateTime: NSTimeInterval = 0
     var dt: NSTimeInterval = 0
     let zombieMovePointsPerSec: CGFloat = 480.0
+    let zombieRotateRadiansPerSecond = 4.0 * π
     
     /// Vector velocidad
     var velocity = CGPointZero
@@ -123,12 +124,12 @@ class GameScene: SKScene {
             velocity = CGPointZero
             
         } else {
-
+            
             moveSprite(zombie, velocity: velocity)
         
             
-            //Rota al zombie en el angulo del vector velocidad
-            rotateSprite(zombie, direction: velocity)
+            //Rota al zombie
+            rotateSprite(zombie, direction: velocity, rotateRadiansPerSec: zombieRotateRadiansPerSecond)
         }
         
         
@@ -193,9 +194,11 @@ class GameScene: SKScene {
     ///
     /// Rota a un sprite segun el angulo del vector direction (angulo = arctan (opuesto / adyacente))
     ///
-    func rotateSprite(sprite: SKSpriteNode, direction: CGPoint) {
-        //sprite.zRotation = CGFloat(atan2(Double(direction.y), Double(direction.x)))
-        sprite.zRotation = direction.angle
+    func rotateSprite(sprite: SKSpriteNode, direction: CGPoint, rotateRadiansPerSec: CGFloat) {
+        
+        let shortest = shortestAngleBetween(sprite.zRotation, velocity.angle)
+        let amountToRotate = min(rotateRadiansPerSec * CGFloat(dt), abs(shortest))
+        sprite.zRotation += shortest.sign() * amountToRotate
     }
     
     ///
