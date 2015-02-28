@@ -90,7 +90,8 @@ func shortestAngleBetween(angle1: CGFloat, angle2: CGFloat) -> CGFloat {
     var angle = (angle2 - angle1) % twoπ
     if (angle >= π) {
         angle = angle - twoπ
-    } else {
+    }
+    if (angle <= -π) {
         angle = angle + twoπ
     }
     return angle

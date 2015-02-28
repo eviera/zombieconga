@@ -201,6 +201,8 @@ class GameScene: SKScene {
         sprite.zRotation += shortest.sign() * amountToRotate
     }
     
+    
+    
     ///
     /// Al tocar en un punto de la pantalla llama a recalcular el vector velocidad
     ///
